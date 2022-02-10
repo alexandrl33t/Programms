@@ -1,0 +1,220 @@
+import tkinter as tk
+from tkinter import Button, Entry, Label, Place, StringVar, Text, Tk, mainloop, ttk
+from tkinter import font
+from tkinter import messagebox
+from tkinter.constants import ANCHOR, BOTTOM, COMMAND, END, LEFT, RIGHT, TOP, X, Y
+from tkinter.font import BOLD
+from tkinter import filedialog as fd
+
+
+class Main(tk.Frame):
+    def __init__(self, root):
+        super().__init__(root)
+        self.init_main() 
+
+
+    def treeview_sort_column(self, tv, col, reverse):
+        l = [(tv.set(k, col), k) for k in tv.get_children('')]
+        l.sort(reverse=reverse)
+
+        for index, (val, k) in enumerate(l):
+            tv.move(k, '', index)
+
+        tv.heading(col, command=lambda: self.treeview_sort_column(tv, col, not reverse))
+
+    def init_main(self):
+        toolbar = tk.Frame(bg='#d7d8e0', bd=5, height=35)
+        toolbar.pack(side=tk.TOP, fill=tk.X)
+
+        down = tk.Frame(bg='#d7d8e0', bd=5)
+        down.pack(side=tk.BOTTOM, fill=tk.X) 
+
+        self.btn = Button(toolbar, text='Взять книгу', command=self.takeBook, width=15)
+        self.btn.pack(side=LEFT)
+
+        self.btn = Button(toolbar, text='Вернуть книгу', command=self.returnBook, width=15)
+        self.btn.pack(side=LEFT, padx=15)
+
+        self.btn = Button(toolbar, text='Наличие книг', command=self.ammount_bk)
+        self.btn.pack(side=LEFT)
+        
+        self.tree = ttk.Treeview(self, columns=('udk', 'autor', 'book', 'year', 'ammount'), height=20, show='headings')
+        self.tree.column('udk', width=70, anchor=tk.CENTER)
+        self.tree.column('autor', width=200, anchor=tk.CENTER)
+        self.tree.column('book', width=350, anchor=tk.CENTER)
+        self.tree.column('year', width=100, anchor=tk.CENTER)
+        self.tree.column('ammount', width=80, anchor=tk.CENTER)
+
+        self.tree.heading('udk', text='УДК', command=lambda: self.treeview_sort_column(self.tree, 0, False))
+        self.tree.heading('autor', text='Автор', command=lambda: self.treeview_sort_column(self.tree, 1, False))
+        self.tree.heading('book', text='Название книги', command=lambda: self.treeview_sort_column(self.tree, 2, False))
+        self.tree.heading('year', text='Год', command=lambda: self.treeview_sort_column(self.tree, 1, False))
+        self.tree.heading('ammount', text='Количество', command=lambda: self.treeview_sort_column(self.tree, 1, False))
+        self.tree.pack(side=tk.LEFT)
+
+        self.scroll = ttk.Scrollbar(self, command=self.tree.yview)
+        self.scroll.pack(side=tk.LEFT, fill=tk.Y)
+        self.tree.configure(yscrollcommand=self.scroll.set)
+
+    def newWord(self):
+        word = self.string[0:self.string.find(' ')+1]
+        self.string = self.string[self.string.find(' ')+1:len(self.string)]
+        s = " ".join(word.split())
+        return word
+        
+    def newLine(self, string):
+        " ".join(string.split())
+        if (len(string) >1 ):
+            self.string = string
+            self.first = self.newWord()
+            self.second = ''
+            self.thirt = ''
+            self.fourth = ''
+            self.fifth = ''       
+            while (self.second.find('-') == -1):
+                self.second+= self.newWord()
+            self.second = self.second[0:len(self.second)-3]    
+            while (self.string[0].isdigit() == False):
+                self.thirt += self.newWord() 
+            self.fourth = self.newWord()
+            self.fifth = self.string[0:len(self.string)-1]
+       
+
+    def fillData(self):
+        for row in self.tree.get_children():
+                self.tree.delete(row)
+        self.data = open('C:\\Users\\Vinda\\Desktop\\Programms\\library.txt', mode='r', encoding='utf8').readlines()
+        for i in range (len(self.data)):
+            s = self.data[i]
+            ' '.join(s.split())
+            self.newLine(s)
+            self.tree.insert('', 'end', values=(self.first, self.second, self.thirt, self.fourth, self.fifth))
+
+    def takeBook(self):
+        Take()
+    
+    def returnBook(self):
+        Giveback()
+
+    def ammount_bk(self):
+        showInfo()
+
+class showInfo(tk.Toplevel, Main):
+    def __init__(self):
+        super().__init__()
+        self.init_show()
+    
+    def init_show(self):
+        self.title('Наличие книг')
+        self.geometry('820x250+250+80')
+        self.tree = ttk.Treeview(self, columns=('udk', 'autor', 'book', 'year', 'ammount'), height=20, show='headings')
+        self.tree.column('udk', width=70, anchor=tk.CENTER)
+        self.tree.column('autor', width=200, anchor=tk.CENTER)
+        self.tree.column('book', width=350, anchor=tk.CENTER)
+        self.tree.column('year', width=100, anchor=tk.CENTER)
+        self.tree.column('ammount', width=80, anchor=tk.CENTER)
+
+        self.tree.heading('udk', text='УДК', command=lambda: self.treeview_sort_column(self.tree, 0, False))
+        self.tree.heading('autor', text='Автор', command=lambda: self.treeview_sort_column(self.tree, 1, False))
+        self.tree.heading('book', text='Название книги', command=lambda: self.treeview_sort_column(self.tree, 2, False))
+        self.tree.heading('year', text='Год', command=lambda: self.treeview_sort_column(self.tree, 1, False))
+        self.tree.heading('ammount', text='Количество', command=lambda: self.treeview_sort_column(self.tree, 1, False))
+        self.tree.pack(side=tk.LEFT)
+
+        self.scroll = ttk.Scrollbar(self, command=self.tree.yview)
+        self.scroll.pack(side=tk.LEFT, fill=tk.Y)
+        self.tree.configure(yscrollcommand=self.scroll.set)
+
+        self.fillData()
+
+        
+        for index, row_id in enumerate(self.tree.get_children(), 0):
+            for i in range (len(self.data)):
+                s = self.data[i]
+                self.newLine(s)
+                if (int(self.fifth) == 0):
+                    if (index == i):
+                        self.tree.delete(row_id)
+
+class Take(tk.Toplevel):
+    def __init__(self):
+        super().__init__()
+        self.init_take()
+
+    def save(self):
+        app.data.clear()
+        data_to_write = ''
+        for line in app.tree.get_children():
+            for i, value in enumerate(app.tree.item(line)['values'], start=0):
+                if (i == 1):
+                    value += ' -'
+                value = " ".join(str(value).split())    
+                data_to_write = data_to_write + str(value) + " "
+            data_to_write +='\n'
+        filepath = 'C:\\Users\\Vinda\\Desktop\\Programms\\library.txt'
+        with open(filepath, "w", encoding='utf8') as file:
+            for i in range(len(data_to_write)):
+                file.write(data_to_write[i])
+
+    def edit_data(self):
+        if (self.entry.get().isdigit()): 
+            isCoorrect = False
+            for i in range (len(app.data)):
+                s = app.data[i]
+                app.newLine(s)
+                if (int(app.first) == int(self.entry.get())):
+                    if (type(self).__name__ == 'Take'):
+                        if (int(app.fifth) == 0):
+                            messagebox.showerror('Ошибка', 'Книги под данным УДК нет в наличии')
+                            continue
+                        app.fifth = int(app.fifth) - 1
+                        isCoorrect = True 
+                    elif (type(self).__name__ == 'Giveback'):
+                        isCoorrect = True 
+                        app.fifth = int(app.fifth) + 1
+                    for index, row_id in enumerate(app.tree.get_children(), 0):
+                        if (index == i):
+                            app.tree.item(row_id, values=(app.first, app.second, app.thirt, app.fourth, app.fifth))  
+            self.save() 
+            app.fillData()   
+            if (isCoorrect == True ):
+                if (type(self).__name__ == 'Take'):
+                    messagebox.showinfo('Успешно', 'Книга взята') 
+                elif (type(self).__name__ == 'Giveback'):
+                    messagebox.showinfo('Успешно', 'Вы вернули книгу')     
+            else: messagebox.showerror('Ошибка', 'Некорректный УДК')   
+            self.destroy()       
+        else:
+            messagebox.showerror('Ошибка', 'УДК должен состоять только из цифр')    
+
+    def init_take(self):
+        self.title('Взять')
+        self.geometry('200x100+300+50')
+        self.resizable(False, False)
+        self.entry = Entry(self, width=15)
+        self.entry.place(relx=0.05, rely=.4)
+        self.lbl = Label(self,text='Введите УДК')
+        self.lbl.place(relx=0.05, rely=.1)
+        self.btn = Button(self,text='Взять', command=self.edit_data)
+        self.btn.place(relx=.6, rely=.35)
+
+class Giveback(Take):
+    def __init__(self):
+        super().__init__()
+        self.init_child()
+        
+    def init_child(self):
+        self.title('Вернуть')
+        self.btn['text'] = 'Вернуть'
+            
+
+if __name__ == "__main__":
+    root = tk.Tk()
+   
+    app = Main(root)
+    app.pack()
+    root.title("Библиотека")
+    root.geometry("820x250+250+80")
+    root.resizable(True, False)
+    app.fillData()
+    root.mainloop()    

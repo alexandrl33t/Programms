@@ -1,7 +1,13 @@
 
 def command_processing(commands):
-    if commands[0] != "ввод":
-        return Ошибка 
+    
+    return commands    
+
+def isTochka_zapyataya(word):
+    for num,char in enumerate(word):
+            if char == ';':
+                return True
+    return False
 
 def check_for_errors(data):
     data = data.lower()
@@ -13,25 +19,21 @@ def check_for_errors(data):
             return "Ошибка. Программа, должна заканчиваться словом ""Конец""" 
     except: return "Программа пуста. "  
 
-    first_command = 1 #левая граница строки с командой
-    last_command = len(data_list)-2 #правая граница строки с командной
 
-
-    """цикл идет до первой встречной точки с запятой и обрабатывает команду до этой точки с запятой 
-    методом command_processing"""
     for i in range(1,len(data_list)-1):
-        for num,char in enumerate(data_list[i]):
-            if char == ';':
-                last_command = i
-                data_list[i] = data_list[i][0:num]            
-        print(command_processing(data_list[first_command:last_command+1]))
-        first_command = i+1
+        first_command = 1
+        last_command = len(data_list)-2
+        if isTochka_zapyataya(data_list[i]):
+            data_list[i] = data_list[i][0:len(data_list[i])-1]
+            last_command = i
+            print(command_processing(data_list[first_command:last_command+1]))
 
-    return ""
+    return data_list    
+
 
     
 
 
 if __name__ == '__main__':
-    print(check_for_errors('Программа конец'))    
+    print(check_for_errors('Программа ввод строка1; ввод строка2 конец'))    
     

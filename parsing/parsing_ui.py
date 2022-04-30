@@ -44,7 +44,7 @@ class Main(tk.Frame):
         self.lbl1 = tk.Label(output, text="Вывод:", padx=30, background="#d7d8e0",  font=('Times New Roman', 14))
         self.lbl1.place(x=0,y=0)
 
-        self.output_field = tk.Text(output, width=900, border=2, pady=4)
+        self.output_field = tk.Text(output, font="Courier 13",width=900, border=2, pady=4)
         self.output_field.place(x=0, y=25, height=70, width=890)
 
         self.apply_btn = tk.Button(root, text="Выполнить", font=("Courier", 13, BOLD), width=10, command=self.apply)
@@ -60,8 +60,10 @@ class Main(tk.Frame):
         for id,string in enumerate(self.data):
             string = str(string)
             self.entry2.insert(float(id+1), string)
+
     def apply(self):
-        pr.check_for_errors(self.entry1.get(1.0, END))          
+        self.output_field.delete(1.0, END)
+        self.output_field.insert(1.0, pr.check_for_errors(self.entry1.get(1.0, END)))         
                 
 
     

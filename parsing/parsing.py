@@ -1,6 +1,7 @@
 
 def command_processing(commands):
-    return commands
+    if commands[0] != "ввод":
+        return Ошибка 
 
 def check_for_errors(data):
     data = data.lower()

@@ -77,7 +77,7 @@ if __name__ == "__main__":
    
     app = Main(root)
     app.pack()
-    root.title("Библиотека")
+    root.title("Programm")
     root.geometry("900x630+250+80")
     root.resizable(False, False)
     root.mainloop()    

@@ -7,8 +7,27 @@ import re
 
 output = "" 
 
-def right_part(commands):
-    return
+memory = {}
+
+class Perem():
+    def __init__(self, name, value):
+        self.name = name
+        self.value = value
+
+def right_part(commands, number_of_command):
+    #отсечение правой части 
+    try:
+        if commands[3].find("=") > -1:
+            commands = " ".join(commands)
+            commands = re.split("=", commands)
+        else:
+            return "zОшибка. После переменной должно стоять \"=\"f " + str(number_of_command)
+    except:
+        return "zОшибка. Неполная командаf" + str(number_of_command)
+
+    right = commands[1].split()
+      
+    return commands[1]
 
 def toInt(command):
     try:
@@ -32,6 +51,7 @@ def command_processing(commands, number_of_command):
             return "zОшибка. После метки должно стоять \":\"f " + str(number_of_command)
     except:
         return "zОшибка. Неполная команда f " + str(number_of_command)
+
    #проверка переменной
     try:
         m = re.search('[а-я][0-7][0-7][0-7]', str(commands[2]))
@@ -39,17 +59,9 @@ def command_processing(commands, number_of_command):
             return "zОшибка. Переменная должна быть формата бццц, где б это А!...!Я, ц это 0!...!7f" + str(number_of_command)    
     except:
         return "zОшибка. Переменная должна быть формата бццц, где б это А!...!Я, ц это 0!...!7f" + str(number_of_command)    
-    try:
-        if commands[3].find("=") > -1:
-            commands = " ".join(commands)
-            commands = re.split("=", commands)
-        else:
-            return "zОшибка. После метки должно стоять \"=\"f " + str(number_of_command)
-    except:
-        return "zОшибка. Неполная командаf" + str(number_of_command)
-
-
-
+    
+    memory[commands[2]] = right_part(commands, number_of_command)
+    
     return " ".join(commands)    
 
 def check_for_errors(data):
@@ -85,5 +97,5 @@ def check_for_errors(data):
 
 
 if __name__ == '__main__':
-    print(check_for_errors('Программа Ввод 42:А565 = 5; ввод 55: ф455 = 5; ввод 6: к666 = 5 конец'))    
+    print(check_for_errors('Программа Ввод 42:А565 = 5 * 5 + ф455; ввод 55: ф455 = 6; ввод 6: к666 = 7 конец'))    
     

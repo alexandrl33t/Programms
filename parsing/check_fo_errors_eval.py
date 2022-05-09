@@ -1,4 +1,30 @@
 import re
+
+def check_quad(string_for_eval):
+    if string_for_eval.find('[') >-1:
+        if string_for_eval.rfind(']') > string_for_eval.find('['):
+            string2 = string_for_eval[string_for_eval.find('[')+1:string_for_eval.rfind(']')]
+            if string2.find('[') >-1:
+                if string2.rfind(']') > string2.find('['):
+                    string2 = string2[string2.find('[')+1:string2.rfind(']')]
+                    if string2.find('[') >-1:
+                        return "zОшибка. Максимальная глубина вложенности у квадратных скобок - 2f"
+                    elif string2.find(']') >-1:
+                        return "zОшибка. Отсутствует открывающая скобка \'[\'f"    
+                    else: 
+                        string_for_eval = string_for_eval.replace('[', '(')
+                        string_for_eval = string_for_eval.replace(']', ')')
+                else: return "zОшибка. Отсутствует закрывающая скобка \']\'f"
+            elif string2.find(']') >-1:
+                 return "zОшибка. Отсутствует открывающая скобка \'[\'f"
+            else:
+                string_for_eval = string_for_eval.replace('[', '(')
+                string_for_eval = string_for_eval.replace(']', ')') 
+        elif string2.find(']') >-1:
+             return "zОшибка. Отсутствует открывающая скобка \'[\'f"                        
+        else: return "zОшибка. Отсутствует закрывающая скобка \']\'f"
+    return string_for_eval       
+
 def check(string_for_eval):
     string_for_eval = " ".join(string_for_eval.split())
     string2 = "".join(string_for_eval.split())
@@ -7,7 +33,9 @@ def check(string_for_eval):
     for letter in string2:
         if not pattern.search(letter):
             return "zОшибка. Строка не должна содеражть \'" + letter + "\'f" 
-    del string2            
+    del string2   
+
+      
     #проверка правильно ли расставлены скобки
     if string_for_eval.find('(')>-1:
         if string_for_eval.find(')')>-1 and string_for_eval.find(')') > string_for_eval.find('('):
@@ -18,10 +46,12 @@ def check(string_for_eval):
                     string_for_eval = " ".join(string_for_eval.split())
                     return check(string_for_eval)
                 else: return check(string_inside[1:len(string_inside)-1] ) 
-            else: return "zОшибка. Пустое выражение внутри скобок. f"        
-        else: return "zОшибка. Отсутствует закрывающая скобка.f"
+            else: return "zОшибка. Пустое выражение внутри скобок \'()\'f"        
+        else: return "zОшибка. Отсутствует закрывающая скобка \')\'f"
     elif string_for_eval.find('(') == -1 and string_for_eval.find(')')>-1:
         return "zОшибка. Лишняя скобка \')\'.f"
+
+      
 
     regex = '[0-9\-]'
     pattern = re.compile(regex)
@@ -51,4 +81,4 @@ def check(string_for_eval):
 
 
 if __name__ == '__main__':
-    print(check('6 + 30'))
+    print(check('6 + [[1+2]+30]'))

@@ -1,4 +1,4 @@
-print(53)
+
 
 from dataclasses import replace
 from doctest import OutputChecker
@@ -24,7 +24,10 @@ def complited_right_part(right,number_of_command):
                 right = right.replace(m.group(0), str(memory[m.group(0)]))
             except:
                 return "zОшибка. Переменная " + m.group(0) + " не объявлена.f" + str(number_of_command)      
-    right = " ".join(right.split())                   
+    right = " ".join(right.split())
+    right = cf.check_quad(right)
+    if right.find('z') > -1:
+        return right + str(number_of_command)                   
     isRight = cf.check(right)
     if isRight == True:
         try:   
@@ -48,12 +51,6 @@ def right_part(commands, number_of_command):
   
     return complited_right_part(right, number_of_command)
 
-def toInt(command):
-    try:
-        command = int(command)
-        return str(command)
-    except: 
-        return "zОшибка. Метка должна быть целым числом. f"
 
 def command_processing(commands, number_of_command):
     if commands[0] != "ввод":
@@ -61,7 +58,7 @@ def command_processing(commands, number_of_command):
     
     #проверка метки
     try:
-        if commands[1].find(":") > 0:
+        if commands[1].find(":") > -1:
             commands = " ".join(commands)
             commands = re.split(":", commands)
             commands = " ".join(commands)
@@ -72,10 +69,9 @@ def command_processing(commands, number_of_command):
         return "zОшибка. После слова ввод должна идти метка f" + str(number_of_command)
 
     try:
-        commands[1] = toInt(commands[1])
+        commands[1] = str(int(commands[1]))
     except:
-        return "zОшибка. Неполная команда.f"    
-
+        return "zОшибка. Метка должна быть целым числом.f"     
    #проверка переменной
     try:
         m = re.search('[а-я][0-7][0-7][0-7]', str(commands[2]))
@@ -85,7 +81,6 @@ def command_processing(commands, number_of_command):
         return "zОшибка. Переменная должна быть формата бццц, где б это А!...!Я, ц это 0!...!7f" + str(number_of_command)    
     
     memory[commands[2]] = right_part(commands, number_of_command)
-    print(memory)
     try: 
         memory[commands[2]] = str(int(memory[commands[2]]))
     except:
@@ -128,6 +123,6 @@ def check_for_errors(data):
 
 
 if __name__ == '__main__':
-    #print(check_for_errors('Программа Ввод 42:А565 = 5 * 5 + ф455 ввод 55: ф455 = 6 ввод 6: к666 = 7 конец'))    
-    #print(check_for_errors('Программа Ввод 42:А565 = 5 * 5 + ф455 конец'))
-    print(check_for_errors('Программа Ввод 4s:А565 = 5 / (5 * 4); ввод 55: ф455 = 6; ввод 6: к666 = 7 + а565 + ф455 конец'))
+    print(check_for_errors('Программа Ввод 42:А565 = 5 * 5 + 10 ввод 55: ф455 = 6 ввод 6: к666 = 7 конец'))    
+    print(check_for_errors('Программа Ввод 42:А565 = 5 * 5 + ф455 конец'))
+    print(check_for_errors('Программа Ввод 55:А565 = 5 / 5; ввод 55: ф455 = 6 + а565; ввод 6: к666 = 7 + а565 + ф455 + 100 конец'))

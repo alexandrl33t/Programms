@@ -2,10 +2,11 @@
 from dataclasses import replace
 from doctest import OutputChecker
 from logging import exception
+from ntpath import join
 import string
 from unicodedata import digit
 import re
-
+import check_fo_errors_eval as cf
 
 
 
@@ -21,13 +22,12 @@ def complited_right_part(right,number_of_command):
             try:
                 right = right.replace(m.group(0), str(memory[m.group(0)]))
             except:
-                return "zОшибка. Переменной " + m.group(0) + " не существует.f" + str(number_of_command)    
-       
-    try: 
-        right = eval(right)
-    except:
-        return "Ошибка"           
-    return right
+                return "zОшибка. Переменной " + m.group(0) + " не существует.f" + str(number_of_command)   
+    right = " ".join(right.split())             
+    isRight = cf.check(right)
+    if isRight == True:   
+        return eval(right)
+    else: return isRight + str(number_of_command)
 
 def right_part(commands, number_of_command):
     #отсечение правой части 

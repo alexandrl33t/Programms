@@ -1,3 +1,4 @@
+print(53)
 
 from dataclasses import replace
 from doctest import OutputChecker
@@ -22,11 +23,14 @@ def complited_right_part(right,number_of_command):
             try:
                 right = right.replace(m.group(0), str(memory[m.group(0)]))
             except:
-                return "zОшибка. Переменной " + m.group(0) + " не существует.f" + str(number_of_command)   
-    right = " ".join(right.split())             
+                return "zОшибка. Переменная " + m.group(0) + " не объявлена.f" + str(number_of_command)      
+    right = " ".join(right.split())                   
     isRight = cf.check(right)
-    if isRight == True:   
-        return eval(right)
+    if isRight == True:
+        try:   
+            return eval(right)
+        except ZeroDivisionError:
+                return "zОшибка. Деление на ноль. f" + str(number_of_command)      
     else: return isRight + str(number_of_command)
 
 def right_part(commands, number_of_command):
@@ -41,7 +45,6 @@ def right_part(commands, number_of_command):
         return "zОшибка. Неполная командаf" + str(number_of_command)
 
     right = " ".join(commands[1].split())
-    answer = ''
   
     return complited_right_part(right, number_of_command)
 
@@ -83,7 +86,11 @@ def command_processing(commands, number_of_command):
     
     memory[commands[2]] = right_part(commands, number_of_command)
     print(memory)
-    return " ".join(commands)    
+    try: 
+        memory[commands[2]] = str(int(memory[commands[2]]))
+    except:
+        pass  
+    return str(commands[2]) + " = " +str(memory[commands[2]]) + "\n"
 
 def check_for_errors(data):
     data = data.lower()
@@ -107,13 +114,13 @@ def check_for_errors(data):
             return "После команды " + data_list[0] + " должна стоять \';\'"
         else:
             data_list[0] = 'ввод ' + data_list[0]
-    output = ''
+    output = 'Результаты выполнения программы: '
     for i, command in enumerate(data_list):
         command = " ".join(command.split())
         output += command_processing(command.split(), i) + " "
-    
-    if output.find("z") > -1:
-        output = output[output.find("z")+1:output.find("f")]
+        if output.find("z") > -1:
+            output = output[output.find("z")+1:output.find("f")]
+            return output
     return " ".join(output.split())
 
 
@@ -123,4 +130,4 @@ def check_for_errors(data):
 if __name__ == '__main__':
     #print(check_for_errors('Программа Ввод 42:А565 = 5 * 5 + ф455 ввод 55: ф455 = 6 ввод 6: к666 = 7 конец'))    
     #print(check_for_errors('Программа Ввод 42:А565 = 5 * 5 + ф455 конец'))
-    print(check_for_errors('Программа Ввод 4:А565 = 5 + (5 * 5); ввод 55: ф455 = 6 * а565; ввод 6: к666 = 7 конец'))
+    print(check_for_errors('Программа Ввод 4s:А565 = 5 / (5 * 4); ввод 55: ф455 = 6; ввод 6: к666 = 7 + а565 + ф455 конец'))

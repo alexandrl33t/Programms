@@ -51,17 +51,18 @@ def check(string_for_eval):
     elif string_for_eval.find('(') == -1 and string_for_eval.find(')')>-1:
         return "zОшибка. Лишняя скобка \')\'.f"
 
-      
-
     regex = '[0-9\-]'
     pattern = re.compile(regex)
-    if not pattern.search(string_for_eval[0:1]):
-        return "zОшибка. Выражение не должно начинаться с \'" + string_for_eval[0:1] + "\' . f"
+    if len(string_for_eval) >0:
+        if not pattern.search(string_for_eval[0:1]):
+            return "zОшибка. Выражение в правой части не должно начинаться с \'" + string_for_eval[0:1] + "\' . f"
+    else: 
+        return "zОшибка. В правой части ничего нет.f"       
     regex = '[0-9]'
     pattern = re.compile(regex)
     if not pattern.search(string_for_eval[len(string_for_eval)-1:len(string_for_eval)]):
-        return "zОшибка. Выражение не должно заканчиваться с \'" + string_for_eval[len(string_for_eval)-1:len(string_for_eval)] + "\' . f"
-
+        return "zОшибка. Выражение в правой части не должно заканчиваться с \'" + string_for_eval[len(string_for_eval)-1:len(string_for_eval)] + "\' . f"
+    
     #проверка есть ли две операции вместе
     without_signs = re.split('\+|\-|\*|\/|\&|\|', string_for_eval)   
     for i in range(1,len(without_signs)-1):

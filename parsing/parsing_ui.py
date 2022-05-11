@@ -1,3 +1,5 @@
+#-*- coding: utf-8 -*-
+
 from email.mime import audio
 from enum import auto
 from re import S
@@ -11,6 +13,8 @@ from tkinter.font import BOLD
 from tkinter import filedialog as fd
 from turtle import left
 import parsing as pr
+import locale
+
 
 
 class Main(tk.Frame):
@@ -61,20 +65,34 @@ class Main(tk.Frame):
             string = str(string)
             self.entry2.insert(float(id+1), string)
 
-    def apply(self):
-        self.output_field.delete(1.0, END)
-        self.output_field.insert(1.0, pr.check_for_errors(self.entry1.get(1.0, END)))         
-                
+    def error_check(self, output):
+         if output.find("z") > -1:
+            output = output[:output.find("f"):-1]
+            return output
 
-    
+    def apply(self):
+        self.entry1.tag_delete("tag")
+        self.output_field.delete(1.0, END)
+        self.output = pr.check_for_errors(self.entry1.get(1.0, END))
+        try:
+            k = str(int(self.error_check(self.output)) + 2) + ".0"
+            k1 = str(int(self.error_check(self.output)) + 3) + ".0"   
+            self.entry1.tag_add("tag", k, k1)  
+            self.entry1.tag_config("tag", background="red", foreground="black")  
+        except:
+            pass    
+            
+        if self.output.find("z") > -1:
+                self.output = self.output[self.output.find("z")+1:self.output.find("f")]
+        self.output_field.insert(1.0, self.output)
 
 
 
             
 
 if __name__ == "__main__":
+    locale.setlocale(locale.LC_ALL, 'ru_RU.UTF8')
     root = tk.Tk()
-   
     app = Main(root)
     app.pack()
     root.title("Programm")

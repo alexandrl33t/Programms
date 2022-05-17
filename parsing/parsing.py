@@ -77,7 +77,7 @@ def command_processing(commands, number_of_command):
     try:
         commands[1] = str(int(commands[1]))
     except:
-        return "zОшибка. Метка должна быть целым числом.f"     
+        return "zОшибка. Метка должна быть целым числом.f" + str(number_of_command)    
    #проверка переменной
     
     try:
@@ -130,7 +130,8 @@ def check_for_errors(data):
             data_list[i] = "ввод" + data_list[i]
             if data_list[i].find(";") > -1 or i == len(data_list)-1:
                 continue
-            return "После команды \'" + data_list[i] + "\' должна стоять \';\'"
+            return "zПосле команды \'" + data_list[i] + "\' должна стоять \';\'f" + str(i-1)
+
         del data_list[0]
     else:
         data_list[0] = 'ввод ' + data_list[0]      

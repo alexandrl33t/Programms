@@ -28,7 +28,7 @@ def check_quad(string_for_eval):
 def check(string_for_eval):
     string_for_eval = " ".join(string_for_eval.split())
     string2 = "".join(string_for_eval.split())
-    regex = '[0-9\+|\-|\*|\/|\&|\||\(|\)|\[|\]]'
+    regex = '[0-9\+|\-|\*|\/|\&|\||\(|\)|\[|\]|\^]'
     pattern = re.compile(regex)
     for letter in string2:
         if not pattern.search(letter):

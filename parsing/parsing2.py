@@ -46,7 +46,9 @@ class Parsing():
                 if len(perem) == 5:
                     m = re.search(f'[а-я][0-7][0-7][0-7]{regex}', perem)   
                 elif len(perem) == 4:
-                    m = re.search(f'[а-я][0-7][0-7][0-7]', perem)   
+                    m = re.search(f'[а-я][0-7][0-7][0-7]', perem)
+                else: 
+                    return self.peremError(perem)          
                 if not m:
                     return self.peremError(perem) 
                 try:
@@ -66,6 +68,10 @@ class Parsing():
     #проверка левой части
     def command_processing(self, data, last_word):
         for i in range(len(data)):
+            for digit in data:
+                if digit.isdigit():
+                    if int(digit) > 7:
+                        return f"zОшибка. Число {digit} не в восьмеричной системе. f" + str(self.number_of_command)
             if last_word == ';':
                 self.number_of_command +=1
             if last_word == '' or  last_word == ';':
@@ -103,18 +109,26 @@ class Parsing():
                         tochka = data.find(';')
                         if tochka > -1:
                             right = self.perem_exchange(data[0:tochka])
+                            if str(right).find("z")>-1:
+                                return right
                             self.memory[self.perem] = self.isOk(right)
+                            if str(self.memory[self.perem]).find("z")>-1:
+                                return self.memory[self.perem] 
                             return self.command_processing(data[tochka+1:len(data)], ';')
                         else: 
                             tochka = data.find('ввод')
                             if tochka > -1:
                                 return f"zОшибка. Отсутствует \';\'f" + str(self.number_of_command)
-                            right = self.perem_exchange(data[0:len(data)]) 
+                            right = self.perem_exchange(data[0:len(data)])
+                            if str(right).find("z")>-1:
+                                return right 
                             self.memory[self.perem] = self.isOk(right)
-                            answer = ''
-                            for item in self.memory.values():
-                                print(item)
-                            return self.memory
+                            answer = 'Результаты выполнения программы: \n'
+                            for item in self.memory.keys():
+                                answer += item + " = " + str(self.memory[item]) + " "  
+                            if answer.find("z") > 0:
+                                answer = answer[answer.find("z"):answer.find("f")+2]    
+                            return answer
 
     def preparation(self, data):
         data = data.lower()
@@ -126,15 +140,16 @@ class Parsing():
                 return  "Ошибка. Программа, должна заканчиваться словом ""Конец""" 
         except: return  "Программа пуста."
 
+
         data = "".join(data_list[1:len(data_list)-1])
         data_list = data_list[1:len(data_list)-1]
         if len(data_list) == 0:
-            return  "Программа пуста. "    
-        
+            return  "Программа пуста. "
+ 
         return self.command_processing(data, '')
         
 if __name__ == '__main__':
     a = Parsing()
     #print(a.preparation('Программа ввод 42:а455 = [[455 + 3]] ^ 350 конец'))    
 #print(a.preparation('Программа Ввод 42:А565 = 5 * 5 + 20 конец'))
-    print(a.preparation('Программа Ввод 55:А565 = 5 / 5; ввод 55: ф455 = 6 + а565; ввод 6: к666 = 7 + а565 + ф455 + 100 конец'))  
+    print(a.preparation('Программа Ввод 555:А565 = 5 / 5; ввод 55: ф455 = 6 + а565; ввод 6: к666 = 7 + а565 + ф455 + 100 конец'))  

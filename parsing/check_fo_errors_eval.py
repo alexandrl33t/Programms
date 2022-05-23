@@ -23,7 +23,7 @@ def check_quad(string_for_eval):
         elif string2.find(']') >-1:
              return "zОшибка. Отсутствует открывающая скобка \'[\'f"                        
         else: return "zОшибка. Отсутствует закрывающая скобка \']\'f"
-    return string_for_eval       
+    return True       
 
 def check(string_for_eval):
     string_for_eval = " ".join(string_for_eval.split())
@@ -35,6 +35,7 @@ def check(string_for_eval):
             return "zОшибка. Строка не должна содеражть \'" + letter + "\'f" 
     del string2   
 
+    
       
     #проверка правильно ли расставлены скобки
     if string_for_eval.find('(')>-1:

@@ -29,7 +29,6 @@ def complited_right_part(right,number_of_command):
             continue 
         try:
             perem = right[i:i+5]
-            print(perem)
             regex = '[\+|\-|\*|\/|\&|\||\(|\)|\[|\]|\^]'
             if len(perem) == 5:
                 m = re.search(f'[а-я][0-7][0-7][0-7]{regex}', perem)
@@ -132,7 +131,7 @@ def check_for_errors(data):
             return  "Ошибка. Программа должна начинаться со слова ""Программа"""
         elif data_list[len(data_list)-1] != "конец":
             return  "Ошибка. Программа, должна заканчиваться словом ""Конец""" 
-    except: return  "Программа пуста. "  
+    except: return  "Программа пуста."  
 
     if len(data_list) == 2:
         return  "Программа пуста. " 
@@ -172,4 +171,4 @@ def check_for_errors(data):
 if __name__ == '__main__':
     #print(check_for_errors('Программа ввод 42:а455 = [[455 + 3]] ^ 350 конец'))    
    # print(check_for_errors('Программа Ввод 42:А565 = 5 * 5 + 20 конец'))
-    print(check_for_errors('Программа Ввод 55:А565 = 5 / 5; ввод 55: ф455 = 6 + а565; ввод 6: к666 = 7 + а565 + ф455 + 100 конец'))
+    print(check_for_errors('Программа Ввод 55:А565 = 5 / 5; ввод 55: ф455 = 6 + а565; ввод 6: к666 = 7 + а565 + ф455 + 100; конец'))

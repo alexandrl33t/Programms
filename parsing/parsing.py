@@ -78,7 +78,7 @@ class Check():
                 elif command[i].isspace():
                      return  self.calculate(command[i+1:len(command)], ': space')
                 elif command[i] == ':':
-                        return 'zОшибка. Дублируется \':\'f'      
+                        return f'zОшибка. Дублируется \':\'f::f1'      
                 else: 
                     return f"zОшибка. Переменная должна быть формата \'БЦЦЦ\', где Б = А!Б!...!Я, Ц = 0!1!...!7'f{self.command}f1"  
         return ""         
@@ -103,7 +103,7 @@ class Check():
         self.data = " ".join(self.data.split()[1:-1])
         if len(re.findall('ввод', self.data)) - len(re.findall(';', self.data)) > 1:
             place = re.findall('\S*[\w|\)|\]]\s*ввод', self.data)[0]
-            return "zОшибка. Отсутствует \';\' между \"" + place + "\""
+            return "zОшибка. Отсутствует \';\' между \"" + place + "\"f" + f"{place}f1" 
         
         #разделение на массив команд и обработка каждой
         command_list = re.split(';', self.data)        
@@ -119,11 +119,19 @@ class Check():
                 except:    
                     continue
             answer += self.command_processing(command_list[i])
+            if answer.find("z") > -1:
+                break
 
-        for item in memory.keys():
-            answer += item + " = " + str(memory[item]) + " " 
+        if answer.find("z") == -1:             
+            for item in memory.keys():
+                answer += item + " = " + str(memory[item]) + " "
+              
         if answer.find("z") > -1:
-            return answer[answer.find("z"):answer.find('f1')+2]                          
+            if answer.find('f1') > -1:
+                answer = answer[answer.find("z"):answer.find('f1')+2]
+            else:
+                answer = answer[answer.find("z"):answer.find('f')+1]    
+
         return  answer
 
 
@@ -133,7 +141,7 @@ class Check():
 if __name__ == '__main__':
     #print(check_for_errors('Программа 42:а455 = [[455 + 3]] + 350 конец'))    
     #a = Check('Программа Ввод 42:А565 = (61 конец')
-    a = Check('Программа Ввод 55 : А565 = 5 / 5; ввод 55 : ф455 =а565 + 5 ; ввод 6: к666 = 7 + [а565 + ф455] + 100 конец')
+    a = Check('Программа Ввод 55 : :А565 = 5 / 5; ввод 55 : ф455 =а565 + 5 ; ввод 6: к666 = 7 + [а565 + ф455] + 100 конец')
     #a = Check('Программа ввод 42:а455 = 455 + 3 + ~350; ввод 55:ы222 = [а455+4] + 5 ; конец')
     #a = Check('Программа ввод 42: а666 = s   конец')
     print(a.check_for_errors())

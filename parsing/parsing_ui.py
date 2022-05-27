@@ -60,7 +60,7 @@ class Main(tk.Frame):
         
 
     def fillData(self):
-        self.data = open('bnf.txt', mode='r', encoding='utf8').readlines()
+        self.data = open('parsing/bnf.txt', mode='r', encoding='utf8').readlines()
         for id,string in enumerate(self.data):
             string = str(string)
             self.entry2.insert(float(id+1), string)
@@ -74,6 +74,7 @@ class Main(tk.Frame):
         self.entry1.tag_delete("tag")
         self.output_field.delete(1.0, END)
         self.output = pr.check_for_errors(self.entry1.get(1.0, END))
+        print(self.output)
         try:
             k = str(int(self.error_check(self.output)) + 2) + ".0"
             k1 = str(int(self.error_check(self.output)) + 3) + ".0"   

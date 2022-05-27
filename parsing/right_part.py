@@ -116,5 +116,8 @@ def right_calculate(data:str, memory:dict):
     except:
         pass
     if new_data.find("z") == -1:
-        return str(int(eval(new_data)))    
+        try:
+            return str(int(eval(new_data)))
+        except ZeroDivisionError:
+            return "zОшибка. Деление на 0f"
     return new_data

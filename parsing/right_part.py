@@ -1,5 +1,6 @@
 import parsing as pr
 import re
+from collections import deque
 
 def right_calculate(data:str, memory:dict):
     data = " ".join(data.split())
@@ -7,7 +8,8 @@ def right_calculate(data:str, memory:dict):
     if len(data) == 0:
         return "zОшибка. В правой части ничего нет.f"
     #замена переменных если есть
-    new_data = ''    
+    new_data = ''  
+    regex_alowed = '\s|\+|\-|\*|\/|\&|\||\)|\]|\(|\[|\~|[а-я]|[0-9]'  
     regex_after_perem = '\s|\+|\-|\*|\/|\&|\||\)|\]'
     regex_operators = '\+|\-|\*|\/|\&|\|'                          
     regex_start_with = '^[\-|\(|\[|а-я|\d|\~]'
@@ -15,6 +17,18 @@ def right_calculate(data:str, memory:dict):
         if data[0] == '=':
             return f"zОшибка. Дублируется \'{data[0]}\'f"
         return f"zОшибка. Выражение не может начинаться с \'{data[0]}\'f"
+    for letter in data:
+        m = re.search(f'[{regex_alowed}', letter)
+        if not m:
+            return f'zОшибка. Недопустимый символ \'{letter}\'f'    
+    
+    m = re.search(f'[\(|\[][{regex_operators}]', data)
+    if m:
+        if m.group(0)[1] != '-':
+            return f"zОшибка. После открывающей скобки не может идти операция \'{m.group(0)[1]}\'f"
+        m = re.search(f'[{regex_operators}][\)|\]]', data)
+    if m:
+        return f"zОшибка. Перед закрывающей скобкой не может идти операция \'{m.group(0)[0]}\'f"   
     for i in range(len(data)):
         if k > 0:
             k-=1
@@ -48,35 +62,37 @@ def right_calculate(data:str, memory:dict):
                         return f"zОшибка. Переменная {perem} не объявлена.f"  
         #работа с круглыми скобками                         
         if data[i] == "(":
-            if data.rfind(")") > -1 and data.rfind(')') > i:
-                string_inside = right_calculate(data[i+1:data.rfind(')')], memory)
-                if string_inside.find('z') > -1:
-                    return string_inside
-                new_data += f"({string_inside})"    
-                k =  data.rfind(')') - i
-                continue      
-            else:
-                return "zОшибка. Отсутствует закрывающая скобка \')\'f"
-        if data[i] == ')':
-             return "zОшибка. Отсутствует открывающая скобка \'(\'f" 
-        if data[i] == '[':
-            if data.rfind("]") > -1 and data.rfind(']') > i:
-                try:
-                    memory['glubina'] +=1
-                    if memory['glubina'] > 2:
-                        return "zОшибка. Глубина вложенности у квадратных скобок - 2f"
-                except:
-                    memory['glubina'] = 1             
-                string_inside = right_calculate(data[i+1:data.rfind(']')], memory)
-                if string_inside.find('z') > -1:
-                    return string_inside
-                new_data += f"({string_inside})"    
-                k =  data.rfind(']') - i
-                continue 
-            else:
-                return "zОшибка. Отсутствует закрывающая скобка \']\'f"
-        if data[i] == ']':
-             return "zОшибка. Отсутствует открывающая скобка \'[\'f" 
+            
+        #     if data.rfind(")") > -1 and data.rfind(')') > i:
+        #         string_inside = right_calculate(data[i+1:data.rfind(')')], memory)
+        #         if string_inside.find('z') > -1:
+        #             return string_inside
+        #         new_data += f"({string_inside})"    
+        #         k =  data.rfind(')') - i
+        #         continue      
+        #     else:
+        #         return "zОшибка. Отсутствует закрывающая скобка \')\'f"
+        # if data[i] == ')':
+        #      return "zОшибка. Отсутствует открывающая скобка \'(\'f" 
+        # if data[i] == '[':
+        #     if data.rfind("]") > -1 and data.rfind(']') > i:
+        #         try:
+        #             memory['glubina'] +=1
+        #             if memory['glubina'] > 2:
+        #                 return "zОшибка. Глубина вложенности у квадратных скобок - 2f"
+        #         except:
+        #             memory['glubina'] = 1  
+        #         string_inside = data[i+1:data.rfind(']')]                   
+        #         string_inside = right_calculate(string_inside, memory)
+        #         if string_inside.find('z') > -1:
+        #             return string_inside
+        #         new_data += f"({string_inside})"    
+        #         k =  data.rfind(']') - i
+        #         continue 
+        #     else:
+        #         return "zОшибка. Отсутствует закрывающая скобка \']\'f"
+        # if data[i] == ']':
+        #      return "zОшибка. Отсутствует открывающая скобка \'[\'f" 
         if data[i] == '~':
             if i != len(data)-1:
                 if data[i+1] == " ":
@@ -99,7 +115,7 @@ def right_calculate(data:str, memory:dict):
                         if re.search(regex_operators, data[i+1]):
                             return "zОшибка. Два оператора не могут идти друг за другом.f"       
                 else:
-                    return f"zОшибка. Оператор {data[i]} не может стоять в конце выражения.f"    
+                    return f"zОшибка. Операция {data[i]} не может стоять в конце выражения.f"    
             elif data[i] != '~': 
                 return f"zОшибка. Недопустимый символ \'{data[i]}\'f"    
         if data[i].isdigit():
@@ -109,7 +125,7 @@ def right_calculate(data:str, memory:dict):
                 if data[i+1] == " ":
                     if data[i+2].isdigit():
                         return f"zОшибка. Два чила не могут идти друг за другом.f"       
-
+        
         new_data += data[i] 
     try:
         del memory['glubina']
